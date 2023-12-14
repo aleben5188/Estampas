@@ -22,7 +22,7 @@ namespace Estampas.Controllers
         // GET: Pedido
         public async Task<IActionResult> Index()
         {
-            var estampasDatabaseContext = _context.Pedidos.Include(p => p.Carrito).Include(p => p.Usuario);
+            var estampasDatabaseContext = _context.Pedidos.Include(p => p.Carrito);
             return View(await estampasDatabaseContext.ToListAsync());
         }
 
@@ -36,7 +36,6 @@ namespace Estampas.Controllers
 
             var pedido = await _context.Pedidos
                 .Include(p => p.Carrito)
-                .Include(p => p.Usuario)
                 .FirstOrDefaultAsync(m => m.PedidoId == id);
             if (pedido == null)
             {
@@ -50,7 +49,6 @@ namespace Estampas.Controllers
         public IActionResult Create()
         {
             ViewData["CarritoId"] = new SelectList(_context.Carritos, "CarritoId", "CarritoId");
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Apellido");
             return View();
         }
 
@@ -59,7 +57,7 @@ namespace Estampas.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PedidoId,UsuarioId,CarritoId")] Pedido pedido)
+        public async Task<IActionResult> Create([Bind("PedidoId,CarritoId")] Pedido pedido)
         {
             if (ModelState.IsValid)
             {
@@ -68,7 +66,6 @@ namespace Estampas.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CarritoId"] = new SelectList(_context.Carritos, "CarritoId", "CarritoId", pedido.CarritoId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Apellido", pedido.UsuarioId);
             return View(pedido);
         }
 
@@ -86,7 +83,6 @@ namespace Estampas.Controllers
                 return NotFound();
             }
             ViewData["CarritoId"] = new SelectList(_context.Carritos, "CarritoId", "CarritoId", pedido.CarritoId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Apellido", pedido.UsuarioId);
             return View(pedido);
         }
 
@@ -95,7 +91,7 @@ namespace Estampas.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PedidoId,UsuarioId,CarritoId")] Pedido pedido)
+        public async Task<IActionResult> Edit(int id, [Bind("PedidoId,CarritoId")] Pedido pedido)
         {
             if (id != pedido.PedidoId)
             {
@@ -123,7 +119,6 @@ namespace Estampas.Controllers
                 return RedirectToAction(nameof(Index));
             }
             ViewData["CarritoId"] = new SelectList(_context.Carritos, "CarritoId", "CarritoId", pedido.CarritoId);
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "UsuarioId", "Apellido", pedido.UsuarioId);
             return View(pedido);
         }
 
@@ -137,7 +132,6 @@ namespace Estampas.Controllers
 
             var pedido = await _context.Pedidos
                 .Include(p => p.Carrito)
-                .Include(p => p.Usuario)
                 .FirstOrDefaultAsync(m => m.PedidoId == id);
             if (pedido == null)
             {

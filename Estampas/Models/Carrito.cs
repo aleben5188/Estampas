@@ -11,7 +11,6 @@ namespace Estampas.Models
 
         //Relaciones con otras entidades
         public ICollection<ItemCarrito>? ItemsCarrito { get; set; }
-        public int? UsuarioId { get; set; }
-        public Usuario? Usuario { get; set; }
+
     }
 }

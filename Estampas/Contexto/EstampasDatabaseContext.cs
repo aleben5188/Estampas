@@ -10,7 +10,6 @@ namespace Estampas.Contexto
         }
         public DbSet<Carrito> Carritos { get; set; }
         public DbSet<ItemCarrito> ItemsCarrito { get; set; }
-        public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Pedido> Pedidos { get; set; }
         public DbSet<Producto> Productos { get; set; }
     }
