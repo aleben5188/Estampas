@@ -4,11 +4,8 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Mi Carrito</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -16,38 +13,47 @@
                 @Html.DisplayNameFor(model => model.Cantidad)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.PrecioTotal)
+                @Html.DisplayNameFor(model => model.Descripcion)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Carrito)
+                @Html.DisplayNameFor(model => model.Precio)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Producto)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+
+            <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Cantidad)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.PrecioTotal)
+                @Html.DisplayFor(modelItem => item.Descripcion)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Carrito.CarritoId)
+                $@Html.DisplayFor(modelItem => item.Precio)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Producto.ProductoId)
+                  <img src="@Url.Content("~")/@item.ImagePath" style="width: 50px; height: 50px;" />
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.ItemCarritoId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ItemCarritoId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ItemCarritoId">Delete</a>
+                <a asp-action="AgregarCantidad" asp-route-id="@item.ItemCarritoId">Agregar</a> |
+                <a asp-action="QuitarCantidad" asp-route-id="@item.ItemCarritoId">Quitar</a> |
+
+
             </td>
+
         </tr>
 }
+
+            <a class="nav-link text-dark" asp-area="" asp-controller="Pedido" asp-action="Create">Finalizar Compra</a>
+
+            <a class="nav-link text-dark" asp-area="" asp-controller="ItemCarrito" asp-action="SeguirComprando">Seguir Comprando</a>
+        Total: $@ViewData["Total"]
     </tbody>
 </table>
+
+             

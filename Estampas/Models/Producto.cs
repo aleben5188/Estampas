@@ -13,8 +13,6 @@ namespace Estampas.Models
         public string? ImagePath { get; set; } // Ruta de la imagen almacenada
         public double Precio { get; set; }
 
-        //Relaciones con otras entidades
-        public int? PedidoId { get; set; }
-        public Pedido? Pedido { get; set; }
+
     }
 }

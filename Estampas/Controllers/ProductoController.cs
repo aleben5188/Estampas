@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Estampas.Contexto;
 using Estampas.Models;
+using Estampas.Migrations;
+using System.Drawing;
+using Humanizer.DateTimeHumanizeStrategy;
 
 namespace Estampas.Controllers
 {
@@ -22,9 +25,92 @@ namespace Estampas.Controllers
         // GET: Producto
         public async Task<IActionResult> Index()
         {
-            var estampasDatabaseContext = _context.Productos.Include(p => p.Pedido);
-            return View(await estampasDatabaseContext.ToListAsync());
+              return _context.Productos != null ? 
+                          View(await _context.Productos.ToListAsync()) :
+                          Problem("Entity set 'EstampasDatabaseContext.Productos'  is null.");
         }
+
+        public async Task<IActionResult> Index2()
+        {
+            return _context.Productos != null ?
+                        View(await _context.Productos.ToListAsync()) :
+                        Problem("Entity set 'EstampasDatabaseContext.Productos'  is null.");
+        }
+
+        /*public async Task<IActionResult> Index2(Usuario usuario)
+        {
+            var ped = _context.Pedidos.FirstOrDefault(p => p.UsuarioId == usuario.UsuarioId && p.Finalizado == false && p.PedidoId != 0);
+            if (ped != null)
+            {
+                ViewData["PedidoId"] = ped.PedidoId;
+                ViewData["UsuarioId"] = usuario.UsuarioId;
+                return _context.Productos != null ?
+                        View(await _context.Productos.ToListAsync()) :
+                        Problem("Entity set 'EstampasDatabaseContext.Productos' is null.");
+            }
+            else
+            {
+                ped = new Models.Pedido()
+                {
+                    UsuarioId = usuario.UsuarioId,
+                    Finalizado = false,
+                };          
+            _context.Pedidos.Add(ped);
+            _context.SaveChanges();
+            };
+            ViewData["PedidoId"] = ped.PedidoId;
+            ViewData["UsuarioId"] = usuario.UsuarioId;
+            return _context.Productos != null ?
+                        View(await _context.Productos.ToListAsync()) :
+                        Problem("Entity set 'EstampasDatabaseContext.Productos' is null.");
+        }*/
+
+
+        /* public async Task<IActionResult> Comprar(int id)
+         {
+             var producto = _context.Productos.FirstOrDefault(p => p.ProductoId == id);
+             var item = new Models.ItemCarrito()
+             {
+                 ProductoId = id,
+                 Descripcion = producto.Descripcion,
+                 ImagePath = producto.ImagePath,
+                 Precio = producto.Precio,
+                 Activo = true,
+                 Cantidad = 1,
+             };
+             _context.ItemsCarrito.Add(item);
+             _context.SaveChanges();
+             return RedirectToAction("CompraRealizada", "ItemCarrito", item);
+         }*/
+
+         public async Task<IActionResult> Comprar(int id)
+ {
+     var producto = _context.Productos.FirstOrDefault(p => p.ProductoId == id);
+            var item = _context.ItemsCarrito.FirstOrDefault(i => i.ProductoId == id && i.Activo == true);
+            if (item == null)
+            {
+                item = new Models.ItemCarrito()
+                {
+                    ProductoId = id,
+                    Descripcion = producto.Descripcion,
+                    ImagePath = producto.ImagePath,
+                    Precio = producto.Precio,
+                    Activo = true,
+                    Cantidad = 1,
+                };
+                _context.ItemsCarrito.Add(item);
+                _context.SaveChanges();
+            }
+            else 
+            {
+                double PrecioUnitario = item.Precio / item.Cantidad;
+                item.Cantidad += 1;
+                item.Precio = PrecioUnitario * item.Cantidad;
+                _context.SaveChanges();
+            }
+     return RedirectToAction("CompraRealizada", "ItemCarrito", item);
+ }
+
 
         // GET: Producto/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -35,7 +121,6 @@ namespace Estampas.Controllers
             }
 
             var producto = await _context.Productos
-                .Include(p => p.Pedido)
                 .FirstOrDefaultAsync(m => m.ProductoId == id);
             if (producto == null)
             {
@@ -48,7 +133,6 @@ namespace Estampas.Controllers
         // GET: Producto/Create
         public IActionResult Create()
         {
-            ViewData["PedidoId"] = new SelectList(_context.Pedidos, "PedidoId", "PedidoId");
             return View();
         }
 
@@ -57,7 +141,7 @@ namespace Estampas.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductoId,Nombre,Descripcion,ImagePath,Precio,PedidoId")] Producto producto)
+        public async Task<IActionResult> Create([Bind("ProductoId,Nombre,Descripcion,ImagePath,Precio")] Producto producto)
         {
             if (ModelState.IsValid)
             {
@@ -65,7 +149,6 @@ namespace Estampas.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PedidoId"] = new SelectList(_context.Pedidos, "PedidoId", "PedidoId", producto.PedidoId);
             return View(producto);
         }
 
@@ -82,7 +165,6 @@ namespace Estampas.Controllers
             {
                 return NotFound();
             }
-            ViewData["PedidoId"] = new SelectList(_context.Pedidos, "PedidoId", "PedidoId", producto.PedidoId);
             return View(producto);
         }
 
@@ -91,7 +173,7 @@ namespace Estampas.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductoId,Nombre,Descripcion,ImagePath,Precio,PedidoId")] Producto producto)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductoId,Nombre,Descripcion,ImagePath,Precio")] Producto producto)
         {
             if (id != producto.ProductoId)
             {
@@ -118,7 +200,6 @@ namespace Estampas.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["PedidoId"] = new SelectList(_context.Pedidos, "PedidoId", "PedidoId", producto.PedidoId);
             return View(producto);
         }
 
@@ -131,7 +212,6 @@ namespace Estampas.Controllers
             }
 
             var producto = await _context.Productos
-                .Include(p => p.Pedido)
                 .FirstOrDefaultAsync(m => m.ProductoId == id);
             if (producto == null)
             {

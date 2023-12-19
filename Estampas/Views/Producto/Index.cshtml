@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Estampas.Models.Producto>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Gestión de Productos";
 }
 
 <h1>Index</h1>
@@ -24,9 +24,6 @@
             <th>
                 @Html.DisplayNameFor(model => model.Precio)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Pedido)
-            </th>
             <th></th>
         </tr>
     </thead>
@@ -46,12 +43,9 @@
                 @Html.DisplayFor(modelItem => item.Precio)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Pedido.PedidoId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ProductoId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ProductoId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ProductoId">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.ProductoId">Editar</a> |
+                <a asp-action="Details" asp-route-id="@item.ProductoId">Detalles</a> |
+                <a asp-action="Delete" asp-route-id="@item.ProductoId">Eliminar</a>
             </td>
         </tr>
 }

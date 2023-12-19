@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Estampas.Contexto;
 using Estampas.Models;
+using Estampas.Migrations;
+using System.Xml.Schema;
 
 namespace Estampas.Controllers
 {
@@ -22,9 +24,27 @@ namespace Estampas.Controllers
         // GET: ItemCarrito
         public async Task<IActionResult> Index()
         {
-            var estampasDatabaseContext = _context.ItemsCarrito.Include(i => i.Carrito).Include(i => i.Producto);
-            return View(await estampasDatabaseContext.ToListAsync());
+            double total = 0;
+            var items = _context.ItemsCarrito.Where(x => x.Activo == true);
+            //   var estampasDatabaseContext = _context.ItemsCarrito.Include(i => i.Pedido).Include(i => i.Producto);
+            foreach(var item in items)
+            {
+                total += item.Precio;
+            }
+            ViewData["Total"] = total;
+            return View(await items.ToListAsync());
         }
+
+        public async Task<IActionResult> CompraRealizada()
+        {
+            return RedirectToAction("Index", "ItemCarrito");
+        }
+
+        public async Task<IActionResult> SeguirComprando()
+        {
+            return RedirectToAction("Index2", "Producto");
+        }
+
 
         // GET: ItemCarrito/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -35,7 +55,6 @@ namespace Estampas.Controllers
             }
 
             var itemCarrito = await _context.ItemsCarrito
-                .Include(i => i.Carrito)
                 .Include(i => i.Producto)
                 .FirstOrDefaultAsync(m => m.ItemCarritoId == id);
             if (itemCarrito == null)
@@ -49,7 +68,6 @@ namespace Estampas.Controllers
         // GET: ItemCarrito/Create
         public IActionResult Create()
         {
-            ViewData["CarritoId"] = new SelectList(_context.Carritos, "CarritoId", "CarritoId");
             ViewData["ProductoId"] = new SelectList(_context.Productos, "ProductoId", "ProductoId");
             return View();
         }
@@ -59,7 +77,7 @@ namespace Estampas.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ItemCarritoId,Cantidad,PrecioTotal,CarritoId,ProductoId")] ItemCarrito itemCarrito)
+        public async Task<IActionResult> Create([Bind("ItemCarritoId,Cantidad,ProductoId,Descripcion,Precio,ImagePath,Activo")] ItemCarrito itemCarrito)
         {
             if (ModelState.IsValid)
             {
@@ -67,7 +85,6 @@ namespace Estampas.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CarritoId"] = new SelectList(_context.Carritos, "CarritoId", "CarritoId", itemCarrito.CarritoId);
             ViewData["ProductoId"] = new SelectList(_context.Productos, "ProductoId", "ProductoId", itemCarrito.ProductoId);
             return View(itemCarrito);
         }
@@ -85,7 +102,6 @@ namespace Estampas.Controllers
             {
                 return NotFound();
             }
-            ViewData["CarritoId"] = new SelectList(_context.Carritos, "CarritoId", "CarritoId", itemCarrito.CarritoId);
             ViewData["ProductoId"] = new SelectList(_context.Productos, "ProductoId", "ProductoId", itemCarrito.ProductoId);
             return View(itemCarrito);
         }
@@ -95,7 +111,7 @@ namespace Estampas.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ItemCarritoId,Cantidad,PrecioTotal,CarritoId,ProductoId")] ItemCarrito itemCarrito)
+        public async Task<IActionResult> Edit(int id, [Bind("ItemCarritoId,Cantidad,ProductoId,Descripcion,Precio,ImagePath,Activo")] ItemCarrito itemCarrito)
         {
             if (id != itemCarrito.ItemCarritoId)
             {
@@ -122,10 +138,72 @@ namespace Estampas.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CarritoId"] = new SelectList(_context.Carritos, "CarritoId", "CarritoId", itemCarrito.CarritoId);
             ViewData["ProductoId"] = new SelectList(_context.Productos, "ProductoId", "ProductoId", itemCarrito.ProductoId);
             return View(itemCarrito);
         }
+
+        public async Task<IActionResult> AgregarCantidad(int? id)
+        {
+            {
+                if (id == null || _context.ItemsCarrito == null)
+                {
+                    return NotFound();
+                }
+                
+                var itemCarrito = await _context.ItemsCarrito
+                    .Include(i => i.Producto)
+                    .FirstOrDefaultAsync(m => m.ItemCarritoId == id);
+                if (itemCarrito == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    var PrecioUnitario = itemCarrito.Precio / itemCarrito.Cantidad;
+                    itemCarrito.Cantidad += 1;
+                    itemCarrito.Precio = PrecioUnitario * itemCarrito.Cantidad;
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("Index", "ItemCarrito");
+            }
+        }
+
+        public async Task<IActionResult> QuitarCantidad(int? id)
+        {
+            {
+                if (id == null || _context.ItemsCarrito == null)
+                {
+                    return NotFound();
+                }
+
+                var itemCarrito = await _context.ItemsCarrito
+                    .Include(i => i.Producto)
+                    .FirstOrDefaultAsync(m => m.ItemCarritoId == id);
+                if (itemCarrito == null)
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    var PrecioUnitario = itemCarrito.Precio / itemCarrito.Cantidad;
+                    itemCarrito.Cantidad -= 1;
+                    _context.SaveChanges();
+                    if (itemCarrito.Cantidad > 0)
+                    { 
+                    itemCarrito.Precio = PrecioUnitario * itemCarrito.Cantidad;
+                    _context.SaveChanges();
+                    }
+                    else
+                    {
+                        _context.Remove(itemCarrito);
+                        _context.SaveChanges();
+                    }
+                   
+                }
+                return RedirectToAction("Index", "ItemCarrito");
+            }
+        }
+
 
         // GET: ItemCarrito/Delete/5
         public async Task<IActionResult> Delete(int? id)
@@ -136,7 +214,6 @@ namespace Estampas.Controllers
             }
 
             var itemCarrito = await _context.ItemsCarrito
-                .Include(i => i.Carrito)
                 .Include(i => i.Producto)
                 .FirstOrDefaultAsync(m => m.ItemCarritoId == id);
             if (itemCarrito == null)

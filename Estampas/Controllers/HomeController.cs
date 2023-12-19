@@ -13,12 +13,22 @@ namespace Estampas.Controllers
                 _logger = logger;
             }
 
-            public IActionResult Index()
-            {
-                return View();
-            }
+        public IActionResult Index()
+        {
+            return RedirectToAction("Index2", "Producto");
+        }
 
-            public IActionResult Privacy()
+        public IActionResult Finalizar()
+        {
+            return View();
+        }
+
+        public IActionResult Index2()
+        {
+            return View();
+        }
+
+        public IActionResult Privacy()
             {
                 return View();
             }

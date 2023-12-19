@@ -22,19 +22,6 @@ namespace Estampas.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Estampas.Models.Carrito", b =>
-                {
-                    b.Property<int>("CarritoId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CarritoId"));
-
-                    b.HasKey("CarritoId");
-
-                    b.ToTable("Carritos");
-                });
-
             modelBuilder.Entity("Estampas.Models.ItemCarrito", b =>
                 {
                     b.Property<int>("ItemCarritoId")
@@ -43,21 +30,32 @@ namespace Estampas.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ItemCarritoId"));
 
+                    b.Property<bool>("Activo")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Cantidad")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CarritoId")
+                    b.Property<string>("Descripcion")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ImagePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PedidoId")
                         .HasColumnType("int");
 
-                    b.Property<double>("PrecioTotal")
+                    b.Property<double>("Precio")
                         .HasColumnType("float");
 
-                    b.Property<int?>("ProductoId")
+                    b.Property<int>("ProductoId")
                         .HasColumnType("int");
 
                     b.HasKey("ItemCarritoId");
 
-                    b.HasIndex("CarritoId");
+                    b.HasIndex("PedidoId");
 
                     b.HasIndex("ProductoId");
 
@@ -72,12 +70,11 @@ namespace Estampas.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PedidoId"));
 
-                    b.Property<int?>("CarritoId")
-                        .HasColumnType("int");
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PedidoId");
-
-                    b.HasIndex("CarritoId");
 
                     b.ToTable("Pedidos");
                 });
@@ -99,60 +96,32 @@ namespace Estampas.Migrations
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PedidoId")
-                        .HasColumnType("int");
-
                     b.Property<double>("Precio")
                         .HasColumnType("float");
 
                     b.HasKey("ProductoId");
-
-                    b.HasIndex("PedidoId");
 
                     b.ToTable("Productos");
                 });
 
             modelBuilder.Entity("Estampas.Models.ItemCarrito", b =>
                 {
-                    b.HasOne("Estampas.Models.Carrito", "Carrito")
-                        .WithMany("ItemsCarrito")
-                        .HasForeignKey("CarritoId");
+                    b.HasOne("Estampas.Models.Pedido", null)
+                        .WithMany("Items")
+                        .HasForeignKey("PedidoId");
 
                     b.HasOne("Estampas.Models.Producto", "Producto")
                         .WithMany()
-                        .HasForeignKey("ProductoId");
-
-                    b.Navigation("Carrito");
+                        .HasForeignKey("ProductoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Producto");
                 });
 
             modelBuilder.Entity("Estampas.Models.Pedido", b =>
                 {
-                    b.HasOne("Estampas.Models.Carrito", "Carrito")
-                        .WithMany()
-                        .HasForeignKey("CarritoId");
-
-                    b.Navigation("Carrito");
-                });
-
-            modelBuilder.Entity("Estampas.Models.Producto", b =>
-                {
-                    b.HasOne("Estampas.Models.Pedido", "Pedido")
-                        .WithMany("Productos")
-                        .HasForeignKey("PedidoId");
-
-                    b.Navigation("Pedido");
-                });
-
-            modelBuilder.Entity("Estampas.Models.Carrito", b =>
-                {
-                    b.Navigation("ItemsCarrito");
-                });
-
-            modelBuilder.Entity("Estampas.Models.Pedido", b =>
-                {
-                    b.Navigation("Productos");
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

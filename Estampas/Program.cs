@@ -1,4 +1,5 @@
 using Estampas.Contexto;
+using Estampas.Models;
 using Microsoft.EntityFrameworkCore;
 using static System.Net.WebRequestMethods;
 
@@ -8,7 +9,7 @@ namespace Estampas
     {
         public static void Main(string[] args)
         {
-            var builder = WebApplication.CreateBuilder(args);
+        var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddDbContext<EstampasDatabaseContext>(
             options =>
            options.UseSqlServer(builder.Configuration["ConnectionString:EstampasConnection"]));
@@ -30,6 +31,7 @@ namespace Estampas
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
             app.Run();
+
         }
     }
 }

@@ -9,12 +9,15 @@ namespace Estampas.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ItemCarritoId { get; set; }
         public int Cantidad { get; set; }
-        public double PrecioTotal { get; set; }
 
         //Relaciones con otras entidades
-        public int? CarritoId { get; set; }
-        public Carrito? Carrito { get; set; }
-        public int? ProductoId { get; set; }
-        public Producto? Producto { get; set; }
+        public int ProductoId { get; set; }
+        public virtual Producto Producto { get; set; }
+        public string Descripcion { get; set; }
+        public double Precio { get; set; }
+        public string ImagePath {  get; set; }
+        public bool Activo { get; set; }
+
+
     }
 }
