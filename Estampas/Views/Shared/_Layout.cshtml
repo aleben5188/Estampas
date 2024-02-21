@@ -2,7 +2,8 @@
 <html lang="en">
 <img src="~/Images/Flores.jpg" alt="Image" />
 
-    <a class="nav-link text-dark" asp-area="" asp-controller="ItemCarrito" asp-action="Index">Ver Carrito</a>
+
+<a class="nav-link text-dark" asp-area="" asp-controller="ItemCarrito" asp-action="Index">Ver Carrito</a>
 <a class="nav-link text-dark" asp-area="" asp-controller="Pedido" asp-action="Index">Mis pedidos</a>
 <a class="nav-link text-dark" asp-area="" asp-controller="Usuarios" asp-action="Create">Registrarse</a>
 <a class="nav-link text-dark" asp-area="" asp-controller="Usuarios" asp-action="InicioSesion">Iniciar Sesión</a>
@@ -45,25 +46,24 @@
 
 
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            <a asp-area="" asp-controller="Producto" asp-action="Index">Gestión de Productos</a>
-        </div>
-
-
-
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-
-
-
-
-
-    @await RenderSectionAsync("Scripts", required: false)
 
 
 </body>
+<footer class="border-top footer text-muted">
+
+
+
+
+</footer>
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+
+
+
+
+@await RenderSectionAsync("Scripts", required: false)
+
 </html>
 

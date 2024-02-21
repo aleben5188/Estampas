@@ -24,11 +24,28 @@ namespace Estampas.Controllers
         }
 
         // GET: Producto
+
+
+
         public async Task<IActionResult> Index()
         {
-              return _context.Productos != null ? 
-                          View(await _context.Productos.ToListAsync()) :
-                          Problem("Entity set 'EstampasDatabaseContext.Productos'  is null.");
+            if (HttpContext.Session.GetString("sesion") == null)
+            {
+                return RedirectToAction("InicioSesion", "Usuarios");
+            }
+
+            else if (HttpContext.Session.GetString("sesion") == "admin@admin.com" && HttpContext.Session.GetString("pwd") == "ale")
+            {
+                return _context.P != null ?
+                         View(await _context.P.ToListAsync()) :
+                         Problem("Entity set 'EstampasDatabaseContext.P'  is null.");
+
+            }
+            else
+            {
+                return View("Incorrecto");
+            }
+
         }
 
         public async Task<IActionResult> Index2()

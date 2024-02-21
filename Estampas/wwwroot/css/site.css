@@ -26,7 +26,7 @@ h1 {
     font-weight: normal;
     margin-top: 5px;
     color: brown;
-    text-align: left;
+    text-align: center;
 }
 
 h2 {
@@ -45,4 +45,20 @@ input[type=button], input[type=submit], input[type=reset] {
     text-decoration: none;
     margin: 4px 2px;
     cursor: pointer;
+}
+
+#outer {
+    position: relative;
+}
+
+
+/* and */
+
+#inner {
+    margin: auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
 }
