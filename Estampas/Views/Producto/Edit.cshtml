@@ -34,6 +34,17 @@
                 <span asp-validation-for="Precio" class="text-danger"></span>
             </div>
             <div class="form-group">
+                <select asp-for="Tipo" class="form-control" asp-items="Html.GetEnumSelectList<Categoria>()">
+                    <option selected="selected" value="">Please select</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <select asp-for="Licencia" class="form-control" asp-items="Html.GetEnumSelectList<Dibujo>()">
+                    <option selected="selected" value="">Please select</option>
+                </select>
+            </div>
+
+            <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
@@ -44,6 +55,9 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
+
+

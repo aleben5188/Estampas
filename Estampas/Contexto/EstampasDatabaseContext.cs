@@ -11,6 +11,9 @@ namespace Estampas.Contexto
         public DbSet<ItemCarrito> ItemsCarrito { get; set; }
         public DbSet<Producto> Productos { get; set; }
         public DbSet<Pedido> Pedidos { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Estampas.Models.P> P { get; set; } = default!;
+
 
 
     }

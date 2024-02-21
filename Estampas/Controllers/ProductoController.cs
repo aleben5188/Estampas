@@ -10,6 +10,7 @@ using Estampas.Models;
 using Estampas.Migrations;
 using System.Drawing;
 using Humanizer.DateTimeHumanizeStrategy;
+using System.Web;
 
 namespace Estampas.Controllers
 {
@@ -36,6 +37,32 @@ namespace Estampas.Controllers
                         View(await _context.Productos.ToListAsync()) :
                         Problem("Entity set 'EstampasDatabaseContext.Productos'  is null.");
         }
+
+        public IActionResult Index3()
+        {
+            /* if (HttpContext.Session.GetString("A") == null)
+             {
+                 HttpContext.Session.SetString("A", "hola");
+             }*/
+
+            return View();
+
+        }
+     /*       public async Task<IActionResult> Filtrar(string parametro)
+        {
+            if (parametro == "Taza")
+            {
+                var productos = _context.Productos.Where(x => x.Tipo == Categoria.Taza);
+                return View(await productos.ToListAsync());
+            }
+            else
+            {
+                var productos = _context.Productos.Where(x => x.Tipo == Categoria.Remera);
+                return View(await productos.ToListAsync());
+            }
+           
+
+        }*/
 
         /*public async Task<IActionResult> Index2(Usuario usuario)
         {
@@ -83,33 +110,47 @@ namespace Estampas.Controllers
              return RedirectToAction("CompraRealizada", "ItemCarrito", item);
          }*/
 
-         public async Task<IActionResult> Comprar(int id)
- {
-     var producto = _context.Productos.FirstOrDefault(p => p.ProductoId == id);
-            var item = _context.ItemsCarrito.FirstOrDefault(i => i.ProductoId == id && i.Activo == true);
-            if (item == null)
+        public async Task<IActionResult> Comprar(int id)
+        {
+
+            if (HttpContext.Session.GetString("sesion") == null)
             {
-                item = new Models.ItemCarrito()
+                return RedirectToAction("InicioSesion", "Usuarios");
+            }
+            else
+            {
+                var producto = _context.Productos.FirstOrDefault(p => p.ProductoId == id);
+                var item = _context.ItemsCarrito.FirstOrDefault(i => i.ProductoId == id && i.Activo == true && i.Email == HttpContext.Session.GetString("sesion"));
+                if (item == null)
                 {
-                    ProductoId = id,
-                    Descripcion = producto.Descripcion,
-                    ImagePath = producto.ImagePath,
-                    Precio = producto.Precio,
-                    Activo = true,
-                    Cantidad = 1,
-                };
-                _context.ItemsCarrito.Add(item);
-                _context.SaveChanges();
+                    item = new Models.ItemCarrito()
+                    {
+                        ProductoId = id,
+                        Descripcion = producto.Descripcion,
+                        ImagePath = producto.ImagePath,
+                        Precio = producto.Precio,
+                        Activo = true,
+                        Cantidad = 1,
+                        Email = HttpContext.Session.GetString("sesion")
+                    };
+                    _context.ItemsCarrito.Add(item);
+                    _context.SaveChanges();
+                }
+                else
+                {
+                    double PrecioUnitario = item.Precio / item.Cantidad;
+                    item.Cantidad += 1;
+                    item.Precio = PrecioUnitario * item.Cantidad;
+                    _context.SaveChanges();
+                }
+                return RedirectToAction("CompraRealizada", "ItemCarrito", item);
             }
-            else 
-            {
-                double PrecioUnitario = item.Precio / item.Cantidad;
-                item.Cantidad += 1;
-                item.Precio = PrecioUnitario * item.Cantidad;
-                _context.SaveChanges();
-            }
-     return RedirectToAction("CompraRealizada", "ItemCarrito", item);
- }
+        }
+
+        public async Task<IActionResult> Comprar2(int id)
+        {
+            return RedirectToAction("InicioSesion", "Home");
+        }
 
 
         // GET: Producto/Details/5
@@ -141,7 +182,7 @@ namespace Estampas.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ProductoId,Nombre,Descripcion,ImagePath,Precio")] Producto producto)
+        public async Task<IActionResult> Create([Bind("ProductoId,Nombre,Descripcion,ImagePath,Precio,Licencia,Tipo")] Producto producto)
         {
             if (ModelState.IsValid)
             {

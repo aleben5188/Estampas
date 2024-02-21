@@ -23,9 +23,18 @@ namespace Estampas.Controllers
         // GET: Pedido
         public async Task<IActionResult> Index()
         {
-              return _context.Pedidos != null ? 
-                          View(await _context.Pedidos.ToListAsync()) :
-                          Problem("Entity set 'EstampasDatabaseContext.Pedidos'  is null.");
+            if (HttpContext.Session.GetString("sesion") != null) { 
+            var pedidos = _context.Pedidos.Where(x => x.Email == HttpContext.Session.GetString("sesion"));
+                //   var estampasDatabaseContext = _context.ItemsCarrito.Include(i => i.Pedido).Include(i => i.Producto);
+                return View(await pedidos.ToListAsync());
+            }
+            else
+            {
+                return RedirectToAction("InicioSesion", "Usuarios");
+            }
+            
+
+
         }
 
         // GET: Pedido/Details/5
@@ -57,28 +66,28 @@ namespace Estampas.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-
-        public async Task<IActionResult> Create([Bind("PedidoId,Email")] Pedido pedido)
+        public async Task<IActionResult> Create([Bind("PedidoId,Email,Fecha,Opinion")] Pedido pedido)
         {
             if (ModelState.IsValid)
             {
                 pedido.Items = new Collection<ItemCarrito>();
+                pedido.Fecha = DateTime.Now;
 
                 foreach (var item in _context.ItemsCarrito)
                 {
-                    if (item.Activo == true)
+                    if (item.Activo == true && item.Email == HttpContext.Session.GetString("sesion"))
                     {
                         pedido.Items.Add(item);
                         item.Activo = false;
                     }
                 }
+                pedido.Email = HttpContext.Session.GetString("sesion");
                 _context.Add(pedido);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Finalizar", "Home");
             }
             return View("~/Views/Home/Finalizar.cshtml");
         }
-
 
         // GET: Pedido/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -88,12 +97,22 @@ namespace Estampas.Controllers
                 return NotFound();
             }
 
+   
+ 
+
             var pedido = await _context.Pedidos.FindAsync(id);
             if (pedido == null)
             {
                 return NotFound();
             }
+            if (pedido.Opinion != null)
+            {
+                string comentario = pedido.Opinion;
+                ViewData["Comentario"] = comentario;
+                return View("Opinion");
+            }
             return View(pedido);
+
         }
 
         // POST: Pedido/Edit/5
@@ -101,34 +120,36 @@ namespace Estampas.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PedidoId,Email")] Pedido pedido)
+        public async Task<IActionResult> Edit(int id, [Bind("PedidoId,Email,Fecha,Opinion")] Pedido pedido)
         {
             if (id != pedido.PedidoId)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
-            {
-                try
+                if (ModelState.IsValid)
                 {
-                    _context.Update(pedido);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PedidoExists(pedido.PedidoId))
+                    try
                     {
-                        return NotFound();
+                        _context.Update(pedido);
+                        await _context.SaveChangesAsync();
                     }
-                    else
+                    catch (DbUpdateConcurrencyException)
                     {
-                        throw;
+                        if (!PedidoExists(pedido.PedidoId))
+                        {
+                            return NotFound();
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
+                    return RedirectToAction(nameof(Index));
                 }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(pedido);
+                return View(pedido);
+            
+
         }
 
         // GET: Pedido/Delete/5

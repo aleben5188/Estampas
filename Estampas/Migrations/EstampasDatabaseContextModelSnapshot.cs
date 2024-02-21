@@ -17,7 +17,7 @@ namespace Estampas.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.12")
+                .HasAnnotation("ProductVersion", "7.0.16")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -40,6 +40,10 @@ namespace Estampas.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ImagePath")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -53,6 +57,9 @@ namespace Estampas.Migrations
                     b.Property<int>("ProductoId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Resenia")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("ItemCarritoId");
 
                     b.HasIndex("PedidoId");
@@ -60,6 +67,22 @@ namespace Estampas.Migrations
                     b.HasIndex("ProductoId");
 
                     b.ToTable("ItemsCarrito");
+                });
+
+            modelBuilder.Entity("Estampas.Models.P", b =>
+                {
+                    b.Property<int>("PId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PId"));
+
+                    b.Property<string>("Nombe")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("PId");
+
+                    b.ToTable("P");
                 });
 
             modelBuilder.Entity("Estampas.Models.Pedido", b =>
@@ -71,7 +94,12 @@ namespace Estampas.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("PedidoId"));
 
                     b.Property<string>("Email")
-                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("Fecha")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Opinion")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PedidoId");
@@ -93,15 +121,43 @@ namespace Estampas.Migrations
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("Licencia")
+                        .HasColumnType("int");
+
                     b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<double>("Precio")
                         .HasColumnType("float");
 
+                    b.Property<int>("Tipo")
+                        .HasColumnType("int");
+
                     b.HasKey("ProductoId");
 
                     b.ToTable("Productos");
+                });
+
+            modelBuilder.Entity("Estampas.Models.Usuario", b =>
+                {
+                    b.Property<int>("UsuarioId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UsuarioId"));
+
+                    b.Property<string>("Contrasenia")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UsuarioId");
+
+                    b.ToTable("Usuarios");
                 });
 
             modelBuilder.Entity("Estampas.Models.ItemCarrito", b =>

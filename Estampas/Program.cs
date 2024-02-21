@@ -15,6 +15,12 @@ namespace Estampas
            options.UseSqlServer(builder.Configuration["ConnectionString:EstampasConnection"]));
             // Add services to the container.
             builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
+
+            builder.Services.AddDistributedMemoryCache();
+            builder.Services.AddSession(options =>
+            {
+                options.IdleTimeout = TimeSpan.FromMinutes(1);
+            });
             var app = builder.Build();
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -25,6 +31,7 @@ namespace Estampas
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseSession();
             app.UseRouting();
             app.UseAuthorization();
             app.MapControllerRoute(

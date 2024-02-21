@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
+
 
 namespace Estampas.Models
 {
@@ -12,6 +14,12 @@ namespace Estampas.Models
         public string? Descripcion { get; set; }
         public string? ImagePath { get; set; } // Ruta de la imagen almacenada
         public double Precio { get; set; }
+
+        [EnumDataType(typeof(Dibujo))]
+        public Dibujo Licencia { get; set; }
+        
+        [EnumDataType(typeof(Categoria))]
+        public Categoria Tipo { get; set; }
 
 
     }

@@ -13,10 +13,14 @@ namespace Estampas.Models
         //Relaciones con otras entidades
         public int ProductoId { get; set; }
         public virtual Producto Producto { get; set; }
+
+        public string Email { get; set; }
         public string Descripcion { get; set; }
         public double Precio { get; set; }
         public string ImagePath {  get; set; }
         public bool Activo { get; set; }
+
+        public string? Resenia { get; set; }
 
 
     }

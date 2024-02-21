@@ -24,36 +24,35 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+        @foreach (var item in Model)
+        {
 
             <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Cantidad)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descripcion)
-            </td>
-            <td>
-                $@Html.DisplayFor(modelItem => item.Precio)
-            </td>
-            <td>
-                  <img src="@Url.Content("~")/@item.ImagePath" style="width: 50px; height: 50px;" />
-            </td>
-            <td>
-                <a asp-action="AgregarCantidad" asp-route-id="@item.ItemCarritoId">Agregar</a> |
-                <a asp-action="QuitarCantidad" asp-route-id="@item.ItemCarritoId">Quitar</a> |
+                <td>
+                    @Html.DisplayFor(modelItem => item.Cantidad)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descripcion)
+                </td>
+                <td>
+                    $@Html.DisplayFor(modelItem => item.Precio)
+                </td>
+                <td>
+                    <img src="@Url.Content("~")/@item.ImagePath" style="width: 50px; height: 50px;" />
+                </td>
+                <td>
+                    <a asp-action="AgregarCantidad" asp-route-id="@item.ItemCarritoId">Agregar</a> |
+                    <a asp-action="QuitarCantidad" asp-route-id="@item.ItemCarritoId">Quitar</a> |
 
 
-            </td>
+                </td>
 
-        </tr>
-}
+            </tr>
+        }
 
-            <a class="nav-link text-dark" asp-area="" asp-controller="Pedido" asp-action="Create">Finalizar Compra</a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="Pedido" asp-action="Create">Finalizar Compra</a>
 
-            <a class="nav-link text-dark" asp-area="" asp-controller="ItemCarrito" asp-action="SeguirComprando">Seguir Comprando</a>
+        <a class="nav-link text-dark" asp-area="" asp-controller="ItemCarrito" asp-action="SeguirComprando">Seguir Comprando</a>
         Total: $@ViewData["Total"]
     </tbody>
 </table>
-
-             

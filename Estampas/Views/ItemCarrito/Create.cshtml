@@ -22,6 +22,11 @@
                 <select asp-for="ProductoId" class ="form-control" asp-items="ViewBag.ProductoId"></select>
             </div>
             <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
                 <label asp-for="Descripcion" class="control-label"></label>
                 <input asp-for="Descripcion" class="form-control" />
                 <span asp-validation-for="Descripcion" class="text-danger"></span>
@@ -40,6 +45,11 @@
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="Activo" /> @Html.DisplayNameFor(model => model.Activo)
                 </label>
+            </div>
+            <div class="form-group">
+                <label asp-for="Resenia" class="control-label"></label>
+                <input asp-for="Resenia" class="form-control" />
+                <span asp-validation-for="Resenia" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
